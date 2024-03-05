@@ -1,27 +1,30 @@
-
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+# coding: utf-8
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, text
 from sqlalchemy.orm import relationship
+from sqlalchemy.ext.declarative import declarative_base
 
-from database import Base
+Base = declarative_base()
+metadata = Base.metadata
 
-class User(Base):
-    __tablename__ = "user"
-
-    id = Column(Integer, primary_key=True, index=True,autoincrement=True)
-    email = Column(String, unique=True, index=True)
-    password = Column(String)
-    is_active = Column(Boolean, default=True)
-    name =Column(String)
-
-    company_id=Column(Integer,ForeignKey('company.id'),nullable=True)
-    age=Column(Integer,nullable=True)
-
-    class Config:
-        orm_mode=True
 
 class Company(Base):
-    __tablename__='company'
-    id=Column(Integer,primary_key=True,autoincrement=True)
-    email=Column(String,unique=True)
-    location=Column(String)
+    __tablename__ = 'company'
 
+    id = Column(Integer, primary_key=True, server_default=text("nextval('company_id_seq'::regclass)"))
+    email = Column(String, unique=True)
+    location = Column(String)
+
+
+class User(Base):
+    __tablename__ = 'user'
+
+    id = Column(Integer, primary_key=True, index=True, server_default=text("nextval('user_id_seq'::regclass)"))
+    email = Column(String, unique=True)
+    password = Column(String)
+    is_active = Column(Boolean)
+    name = Column(String)
+    company_id = Column(ForeignKey('company.id'))
+    age = Column(Integer)
+    lastName = Column(String)
+
+    company = relationship('Company')

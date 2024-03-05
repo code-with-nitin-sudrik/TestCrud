@@ -22,6 +22,7 @@ class UserRequest(BaseModel):
     password:str
     isActive:bool
     name:str
+    lastName:str
 
 
 def getdb():
@@ -41,7 +42,7 @@ def getAllUser(db:Session=Depends(getdb)):
 
 @app.post("/saveUser")
 def saveUser(request:UserRequest,db:Session=Depends(getdb)):
-    user=model.User(email=request.email,password=request.password,is_active=request.isActive,name=request.name)
+    user=model.User(email=request.email,password=request.password,is_active=request.isActive,name=request.name,lastName=request.lastName)
     db.add(user)
     db.commit()
     return user.id
@@ -58,15 +59,12 @@ def update_user(user_id: int, request: UserRequest, db: Session = Depends(getdb)
     user.is_active = request.isActive
     user.name = request.name
     user.password = request.password
-
+    user.lastName=request.lastName
     db.commit()
 
     return {"message": "User updated successfully"}
 
-@app.get("/sendSms/{mobileNumber}")
-def sendsms(mobileNumber: str):
-    print(mobileNumber)
-    return {"message": f"Received mobile number: {mobileNumber}"}
+
 
 @app.get("/getUserById/{userId}")
 def getUserById(userId:int,db:Session=Depends(getdb)):
